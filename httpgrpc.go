@@ -12,14 +12,14 @@ import (
 )
 
 // Assert *Client implements ClientConnInterface.
-var _ grpc.ClientConnInterface = (*Client)(nil)
+var _ grpc.ClientConnInterface = (*ClientConn)(nil)
 
-type Client struct {
+type ClientConn struct {
 	baseURI            string
 	authorizationToken string
 }
 
-func (client *Client) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
+func (client *ClientConn) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
 	msg, err := proto.Marshal(in.(proto.Message))
 	body := bytes.NewBuffer(msg)
 
@@ -41,11 +41,11 @@ func (client *Client) Invoke(ctx context.Context, method string, in interface{},
 		return errors.New(string(responseBody))
 	}
 
-	proto.Unmarshal(responseBody, out.(proto.Message))
+	err = proto.Unmarshal(responseBody, out.(proto.Message))
 
 	return err
 }
 
-func (client *Client) NewStream(_ context.Context, _ *grpc.StreamDesc, _ string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
+func (client *ClientConn) NewStream(_ context.Context, _ *grpc.StreamDesc, _ string, _ ...grpc.CallOption) (grpc.ClientStream, error) {
 	return nil, errors.New("streaming not implemented")
 }
