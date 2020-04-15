@@ -15,21 +15,21 @@ import (
 var _ grpc.ClientConnInterface = (*ClientConn)(nil)
 
 type ClientConn struct {
-	baseURI            string
-	authorizationToken string
+	BaseURI            string
+	AuthorizationToken string
 }
 
 func (client *ClientConn) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
 	msg, err := proto.Marshal(in.(proto.Message))
 	body := bytes.NewBuffer(msg)
 
-	req, err := http.NewRequestWithContext(ctx, "POST", client.baseURI+method, body)
+	req, err := http.NewRequestWithContext(ctx, "POST", client.BaseURI+method, body)
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Content-Type", "application/grpc")
-	req.Header.Set("Authorization", "Bearer "+client.authorizationToken)
+	req.Header.Set("Authorization", "Bearer "+client.AuthorizationToken)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
