@@ -29,7 +29,9 @@ func (client *ClientConn) Invoke(ctx context.Context, method string, in interfac
 	}
 
 	req.Header.Set("Content-Type", "application/grpc")
-	req.Header.Set("Authorization", "Bearer "+client.AuthorizationToken)
+	if client.AuthorizationToken != "" {
+		req.Header.Set("Authorization", "Bearer "+client.AuthorizationToken)
+	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
