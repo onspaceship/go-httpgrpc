@@ -24,7 +24,7 @@ type StatusError struct {
 	Response *http.Response
 }
 
-func (e *StatusError) Error() string {
+func (e StatusError) Error() string {
 	return e.Body
 }
 
