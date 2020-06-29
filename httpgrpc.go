@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -24,8 +25,12 @@ type StatusError struct {
 	Response *http.Response
 }
 
-func (e StatusError) Error() string {
-	return e.Body
+func (e *StatusError) Error() string {
+	if e.Body != "" {
+		return e.Body
+	} else {
+		return fmt.Sprintf("HTTP status code: %v", e.Response.StatusCode)
+	}
 }
 
 func (client *ClientConn) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
