@@ -19,6 +19,15 @@ type ClientConn struct {
 	AuthorizationToken string
 }
 
+type StatusError struct {
+	body     string
+	response *http.Response
+}
+
+func (e *StatusError) Error() string {
+	return e.body
+}
+
 func (client *ClientConn) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
 	msg, err := proto.Marshal(in.(proto.Message))
 	body := bytes.NewBuffer(msg)
@@ -40,7 +49,7 @@ func (client *ClientConn) Invoke(ctx context.Context, method string, in interfac
 
 	responseBody, _ := ioutil.ReadAll(res.Body)
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return errors.New(string(responseBody))
+		return &StatusError{body: string(responseBody), response: res}
 	}
 
 	err = proto.Unmarshal(responseBody, out.(proto.Message))
