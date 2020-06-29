@@ -20,12 +20,12 @@ type ClientConn struct {
 }
 
 type StatusError struct {
-	body     string
-	response *http.Response
+	Body     string
+	Response *http.Response
 }
 
 func (e *StatusError) Error() string {
-	return e.body
+	return e.Body
 }
 
 func (client *ClientConn) Invoke(ctx context.Context, method string, in interface{}, out interface{}, _ ...grpc.CallOption) error {
@@ -49,7 +49,7 @@ func (client *ClientConn) Invoke(ctx context.Context, method string, in interfac
 
 	responseBody, _ := ioutil.ReadAll(res.Body)
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		return &StatusError{body: string(responseBody), response: res}
+		return &StatusError{Body: string(responseBody), Response: res}
 	}
 
 	err = proto.Unmarshal(responseBody, out.(proto.Message))
